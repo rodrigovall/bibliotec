@@ -7,16 +7,21 @@ class LibroController {
   }
 
   async getOne(req, res) {
-    const libroId = req.params.id; // Supongamos que el ID se pasa como un parámetro en la URL
+    const libroId = req.params.id; // el ID se pasa como un parámetro en la URL
 
-    const [result] = await pool.query("SELECT * FROM libros WHERE id = ?", [
-      libroId,
-    ]);
+    try {
+      const [result] = await pool.query("SELECT * FROM libros WHERE id = ?", [
+        libroId,
+      ]);
 
-    if (result.length === 0) {
-      res.status(404).json({ error: "Libro no encontrado" });
-    } else {
-      res.json(result[0]); // Devuelve el primer libro encontrado
+      if (result.length === 0) {
+        res.status(404).json({ error: "Libro no encontrado" });
+      } else {
+        res.json(result[0]); // Devuelve el primer libro encontrado
+      }
+    } catch (error) {
+      console.error("Error al obtener el libro:", error);
+      res.status(500).json({ error: "Error al obtener el libro" });
     }
   }
 
@@ -27,11 +32,9 @@ class LibroController {
 
     // Validación de datos
     if (!isbn) {
-      return res
-        .status(400)
-        .json({
-          error: "El ISBN del libro es obligatorio para la eliminación",
-        });
+      return res.status(400).json({
+        error: "El ISBN del libro es obligatorio para la eliminación",
+      });
     }
 
     try {
@@ -60,11 +63,9 @@ class LibroController {
 
     // Validación de datos (puedes agregar validaciones según tus necesidades)
     if (!isbn) {
-      return res
-        .status(400)
-        .json({
-          error: "El ISBN del libro es obligatorio para la actualización",
-        });
+      return res.status(400).json({
+        error: "El ISBN del libro es obligatorio para la actualización",
+      });
     }
 
     try {
